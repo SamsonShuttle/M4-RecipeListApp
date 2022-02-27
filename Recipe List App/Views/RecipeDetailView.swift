@@ -75,7 +75,7 @@ struct RecipeDetailView: View {
             }
             
         }
-        .navigationBarTitle(recipe.name)
+        //.navigationBarTitle(recipe.name)
     }
 }
 

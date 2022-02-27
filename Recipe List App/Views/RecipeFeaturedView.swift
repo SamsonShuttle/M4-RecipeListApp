@@ -11,6 +11,8 @@ struct RecipeFeaturedView: View {
     
     @EnvironmentObject var model:RecipeModel
     @State var isDetailViewShowing = false
+    @State var tabSelectionIndex = 0
+    
     
     var body: some View {
         
@@ -24,7 +26,7 @@ struct RecipeFeaturedView: View {
             
             
             GeometryReader { geo in
-                TabView {
+                TabView (selection: $tabSelectionIndex) {
                     
                     ForEach (0..<model.recipes.count) { index in
                         
@@ -50,6 +52,7 @@ struct RecipeFeaturedView: View {
                                     
                                 }
                             })
+                                .tag(index)
                                 .sheet(isPresented: $isDetailViewShowing) {
                                     // Show the RecipeDetailView
                                     RecipeDetailView(recipe: model.recipes[index])
@@ -72,16 +75,26 @@ struct RecipeFeaturedView: View {
             VStack (alignment: .leading, spacing: 10) {
                 Text("Prepartion Time")
                     .font(.headline)
-                Text("1 Hour")
+                Text(model.recipes[tabSelectionIndex].prepTime)
                 Text("Highlights")
                     .font(.headline)
-                Text("Healthy, Hearty")
+                RecipeHighlights(highlights: model.recipes[tabSelectionIndex].highlights)
             }
             .padding([.leading, .bottom])
             
         }
+        .onAppear {
+            setFeaturedIndex()
+        }
         
     }
+    
+    func setFeaturedIndex() {
+        // Find the index of first recipe that is featured
+        var index = model.recipes.firstIndex { (recipe) -> Bool in
+            return recipe.featured
+    }
+        tabSelectionIndex = index ?? 0
 }
 
 struct RecipeFeaturedView_Previews: PreviewProvider {
@@ -89,4 +102,5 @@ struct RecipeFeaturedView_Previews: PreviewProvider {
         RecipeFeaturedView()
             .environmentObject(RecipeModel())
     }
+}
 }
